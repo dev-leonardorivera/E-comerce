@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="author" content="LeonardoRivera@gmail.com">
+	<link rel="stylesheet" href="./css/bootstrap.min.css">
+    <script src="./js/jquery.js"></script>
+    <script src="./js/bootstrap.js"></script>
+    
+    <script src="./js/axios.min.js"></script>
+    <script src="https://kit.fontawesome.com/87e28016b0.js" crossorigin="anonymous"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="./css/style.css">
+	<title>Minimon dashboard</title>
+	<link href="css/app.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+	<script src="js/app.js"></script>
+
+    <!------------------------------------  NO TOCAR ESTE script son las funciones y consultaresponses a la DB  ----------------------------------------->
+    <script>
+		function listarOrdenesTodas(){
+			$('#tabla').html('')
+			$('#btn-filtro-todo ').addClass('active')
+			$('#btn-filtro-pendientes ').removeClass('active')
+			$('#btn-filtro-pagadas ').removeClass('active')
+			$('#btn-filtro-completadas ').removeClass('active')
+			const article = { 
+            ID_USER: sessionStorage.getItem('id')
+          }
+               /*Eviamos sentencia*/
+              axios.post('http://localhost/backend_ecomerce/getOrdenCliente.php', article).then(function (response){
+                
+				
+				
+                response.data.map(function(e){
+                  
+                  const id_Orden = { 
+                    ID:e['ID_ORDEN']
+                  }
+                  axios.post('http://localhost/backend_ecomerce/getOrdenPoducto.php', id_Orden).then(function(r){
+                   
+                    let status =''
+                    let color = ''
+                    if(e.STATUS ==1){
+                      status = 'Pendiente'
+                      color = 'bg-warning'
+                    }
+                    if(e.STATUS ==2){
+                      status = 'Pago'
+                      color = 'bg-primary'
+                    }
+                    if(e.STATUS ==3){
+                      status = 'Completado'
+                      color = 'bg-success'
+					  
+                    }
+                    
+                    $('#tabla').html($('#tabla').html()+`
+                    <tr>
+                      <th >`+e.ID_ORDEN+`</th>
+                      <th ><span  class="border rounded p-1  text-white orden status `+color+`">`+status+`</span></th> <!--3 estados (Pendiente, pagada, enviada, completada) -->
+                      <th class="d-none d-xl-table-cell">`+r.data.length+`</th>
+                      <th class="d-none d-xl-table-cell">`+e.FECHA+`</th>
+                      <th class="d-none d-sm-table-cell">`+e.TOTAL+`$</th>
+                      <th >
+                        
+                         
+                          <button  type="button"  onClick="listarOrden(`+e.ID_ORDEN+` , `+e.TOTAL+`)" class="btn btn-primary  btn-lista" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-solid fa-list"></i> Lista</button>                    
+                        
+                        
+                      </th>
+                      
+                    </tr>
+                    
+                    
+                    `)
+                  })
+                }
+                )
+              })
+		}
+
+		
+		function listarOrdenesCompletadas(){
+			$('#tabla').html('')
+			$('#btn-filtro-todo ').removeClass('active')
+			$('#btn-filtro-pendientes ').removeClass('active')
+			$('#btn-filtro-pagadas ').removeClass('active')
+			$('#btn-filtro-completadas ').addClass('active')
+			const article = { 
+            ID_USER: sessionStorage.getItem('id')
+          }
+               /*Eviamos sentencia*/
+              axios.post('http://localhost/backend_ecomerce/getOrdenClienteCompletadas.php', article).then(function (response){
+                response.data.reverse()
+				
+				
+                response.data.map(function(e){
+                  
+                  const id_Orden = { 
+                    ID:e['ID_ORDEN']
+                  }
+                  axios.post('http://localhost/backend_ecomerce/getOrdenPoducto.php', id_Orden).then(function(r){
+                   
+                    let status =''
+                    let color = ''
+                    if(e.STATUS ==1){
+                      status = 'Pendiente'
+                      color = 'bg-warning'
+                    }
+                    if(e.STATUS ==2){
+                      status = 'Pago'
+                      color = 'bg-primary'
+                    }
+                    if(e.STATUS ==3){
+                      status = 'Completado'
+                      color = 'bg-success'
+					  
+                    }
+                    
+                    $('#tabla').html($('#tabla').html()+`
+                    <tr>
+                      <th >`+e.ID_ORDEN+`</th>
+                      <th ><span  class="border rounded p-1 status text-white orden `+color+`">`+status+`</span></th> <!--3 estados (Pendiente, pagada, enviada, completada) -->
+                      <th class="d-none d-xl-table-cell">`+r.data.length+`</th>
+                      <th class="d-none d-xl-table-cell">`+e.FECHA+`</th>
+                      <th class="d-none d-sm-table-cell">`+e.TOTAL+`$</th>
+                      <th >
+                        
+                         
+                          <button type="button"  onClick="listarOrden(`+e.ID_ORDEN+` , `+e.TOTAL+`)" class="btn btn-primary btn-lista " data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-solid fa-list"></i> Lista</button>                    
+                        
+                        
+                      </th>
+                      
+                    </tr>
+                    
+                    
+                    `)
+                  })
+                }
+                )
+              })
+		}
+        
+		function listarOrdenesPagadas(){
+			$('#tabla').html('')
+			$('#btn-filtro-todo ').removeClass('active')
+			$('#btn-filtro-pendientes ').removeClass('active')
+			$('#btn-filtro-pagadas ').addClass('active')
+			$('#btn-filtro-completadas ').removeClass('active')
+			const article = { 
+            ID_USER: sessionStorage.getItem('id')
+          }
+               /*Eviamos sentencia*/
+              axios.post('http://localhost/backend_ecomerce/getOrdenClientePagadas.php', article).then(function (response){
+                response.data.reverse()
+				
+				
+                response.data.map(function(e){
+                  
+                  const id_Orden = { 
+                    ID:e['ID_ORDEN']
+                  }
+                  axios.post('http://localhost/backend_ecomerce/getOrdenPoducto.php', id_Orden).then(function(r){
+                   
+                    let status =''
+                    let color = ''
+                    if(e.STATUS ==1){
+                      status = 'Pendiente'
+                      color = 'bg-warning'
+                    }
+                    if(e.STATUS ==2){
+                      status = 'Pago'
+                      color = 'bg-primary'
+                    }
+                    if(e.STATUS ==3){
+                      status = 'Completado'
+                      color = 'bg-success'
+					  
+                    }
+                    
+                    $('#tabla').html($('#tabla').html()+`
+                    <tr>
+                      <th >`+e.ID_ORDEN+`</th>
+                      <th ><span  class="border rounded p-1 status  text-white orden `+color+`">`+status+`</span></th> <!--3 estados (Pendiente, pagada, enviada, completada) -->
+                      <th class="d-none d-xl-table-cell">`+r.data.length+`</th>
+                      <th class="d-none d-xl-table-cell">`+e.FECHA+`</th>
+                      <th class="d-none d-sm-table-cell">`+e.TOTAL+`$</th>
+                      <th >
+                        
+                         
+                          <button  type="button"  onClick="listarOrden(`+e.ID_ORDEN+` , `+e.TOTAL+`)" class="btn btn-primary btn-lista " data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-solid fa-list"></i> Lista</button>                    
+                        
+                        
+                      </th>
+                      
+                    </tr>
+                    
+                    
+                    `)
+                  })
+                }
+                )
+              })
+		}
+		
+
+
+		function listarOrdenesPendientes(){
+			$('#tabla').html('')
+			$('#btn-filtro-todo ').removeClass('active')
+			$('#btn-filtro-pendientes ').addClass('active')
+			$('#btn-filtro-pagadas ').removeClass('active')
+			$('#btn-filtro-completadas ').removeClass('active')
+			const article = { 
+            ID_USER: sessionStorage.getItem('id')
+          }
+               /*Eviamos sentencia*/
+              axios.post('http://localhost/backend_ecomerce/getOrdenClientePendientes.php', article).then(function (response){
+                response.data.reverse()
+				
+				
+                response.data.map(function(e){
+                  
+                  const id_Orden = { 
+                    ID:e['ID_ORDEN']
+                  }
+                  axios.post('http://localhost/backend_ecomerce/getOrdenPoducto.php', id_Orden).then(function(r){
+                   
+                    let status =''
+                    let color = ''
+                    if(e.STATUS ==1){
+                      status = 'Pendiente'
+                      color = 'bg-warning'
+                    }
+                    if(e.STATUS ==2){
+                      status = 'Pago'
+                      color = 'bg-primary'
+                    }
+                    if(e.STATUS ==3){
+                      status = 'Completado'
+                      color = 'bg-success'
+					  
+                    }
+                    
+                    $('#tabla').html($('#tabla').html()+`
+                    <tr>
+                      <th >`+e.ID_ORDEN+`</th>
+                      <th ><span  class="border rounded p-1 status text-white orden `+color+`">`+status+`</span></th> <!--3 estados (Pendiente, pagada, enviada, completada) -->
+                      <th class="d-none d-xl-table-cell">`+r.data.length+`</th>
+                      <th class="d-none d-xl-table-cell">`+e.FECHA+`</th>
+                      <th class="d-none d-sm-table-cell">`+e.TOTAL+`$</th>
+                      <th >
+                        
+                         
+                          <button  type="button"  onClick="listarOrden(`+e.ID_ORDEN+` , `+e.TOTAL+`)" class="btn btn-primary  btn-lista" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-solid fa-list"></i> Lista</button>                    
+                        
+                        
+                      </th>
+                      
+                    </tr>
+                    
+                    
+                    `)
+                  })
+                }
+                )
+              })
+		}
+        
+
+        
+		
+		function listarOrden(e,t){
+            $('#listaModal').html('')
+          $('#NumeroOrden').html('#'+e)
+          $('#totalModal').html(t+'$')          
+          const article = { 
+            ID: e
+          }
+          axios.post('http://localhost/backend_ecomerce/getOrdenListaProductosModal.php', article).then(function (response){
+            response.data.map(function(item){
+              $('#totalModal').html()
+        
+              $('#listaModal').html($('#listaModal').html()+`
+                <div class="alert alert-light border-2 alert-dismissible fade show" role="alert">
+                  <div  class="row text-center">
+                      
+                      <div class="col">
+                          <span>`+item.NOMBRE+`</span>
+                      </div>
+                      <div class="col">
+                          <span>`+item.ID_PRODUCT+`</span>
+                      </div>
+                      <div class="col">
+                          <span>$`+item.PRECIO+`</span>
+                      </div>
+                      
+                      
+                  </div>
+                  
+              </div>
+
+            
+            `
+            )
+
+
+            }
+            )
+
+            
+          })
+          //getOrdenListaProductosModal.php
+          
+        }
+                   
+   
+        if(sessionStorage){
+          if(sessionStorage.getItem('sesion') == undefined){
+          
+          window.location.href="./login.html"
+         
+          }else{
+            if(sessionStorage.getItem('sesion')==='false'){
+              window.location.href="./login.html"
+            
+            }
+          }
+
+        }else{
+          window.location.href="./login.html"
+        
+        }
+        
+
+        function CerrarSesion(){
+
+          sessionStorage.setItem('sesion','false')
+          sessionStorage.removeItem('nombre')
+          sessionStorage.removeItem('apellido')
+          sessionStorage.removeItem('id')
+          window.location.href="./index.html"
+        }
+
+        $(document).ready(function(){
+
+			changeDash()
+
+		}
+        )
+ 
+    </script>
+    <script> 
+        
+        /* validando el tamaño */
+        $(window).resize(function() {
+            
+            if ($('body').width()>=1200) {
+                $('.btn-cancelar').removeClass('badge')
+                $('.btn-lista').removeClass('badge')
+                $('.status').removeClass('badge')
+                $('.status').addClass('border rounded p-1  text-white orden')
+            }else{
+                if ($('body').width() >= 992) {
+                    $('.btn-cancelar').removeClass('badge')
+                    $('.btn-lista').removeClass('badge')
+                    $('.status').removeClass('badge')
+                $('.status').addClass('border rounded p-1 text-white orden')
+                }else{
+                    if ($('body').width() >=720) {
+                        $('.btn-cancelar').removeClass('badge')
+                        $('.btn-lista').removeClass('badge')
+                        $('.status').removeClass('badge')
+                        $('.status').addClass('border rounded p-1   text-white orden')
+                    }else{
+                        if ($('body').width() >=576) {
+                            $('.btn-cancelar').addClass('badge')
+                            $('.btn-lista').addClass('badge')
+                            $('.status').addClass('badge')
+                            $('.status').removeClass('border rounded p-1  text-white orden')
+                        }
+
+                    }
+
+                }
+
+            }
+
+                
+        });
+      
+    </script>
+	<!------------------------------------  NO TOCAR ESTE script funtiones adicionales ----------------------------------------->
+	<script>
+		function printOrdenData() {
+			// Pie chart
+			const article = { 
+				ID_USER: sessionStorage.getItem('id')};
+			axios.post('http://localhost/backend_ecomerce/getNumOrdenCliente.php',article)
+                .then(function (response){
+					
+
+					
+					$('#numPendientes').html(response.data[0])
+					$('#numPagas').html(response.data[1])
+					$('#numCompletadas').html(response.data[2])
+
+					$('#card-completadas').html(response.data[0])
+					$('#porcentajeCompletadas').html(((response.data[0]*100)/response.data[3]).toFixed(2)+'%')
+
+					$('#card-Pagas').html(response.data[1])
+					$('#porcentajePagas').html(((response.data[1]*100)/response.data[3]).toFixed(2)+'%')
+
+					$('#card-Pendientes').html(response.data[2])
+					$('#porcentajePendientes').html(((response.data[2]*100)/response.data[3]).toFixed(2)+'%')
+
+					$('#card-total').html(response.data[3])
+					$('#porcentajeTotal').html(((response.data[3]*100)/response.data[3]).toFixed(2)+'%')
+					new Chart(document.getElementById("chartjs-dashboard-pie"), {
+						type: "pie",
+						data: {
+							labels: ["Pagas", "Completadas", "Pendientes"],
+							datasets: [{
+								data: [response.data[1], response.data[2], response.data[0]],
+								backgroundColor: [
+									window.theme.primary,
+									window.theme.success,
+									window.theme.warning
+
+								],
+								borderWidth: 5
+							}]
+						},
+						options: {
+							responsive: !window.MSInputMethodContext,
+							maintainAspectRatio: false,
+							legend: {
+								display: false
+							},
+							cutoutPercentage: 75
+						}
+					});
+				});
+				}
+
+
+		function calendario(){
+			
+			var date = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+			var defaultDate = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
+			document.getElementById("datetimepicker-dashboard").flatpickr({
+				inline: true,
+				prevArrow: "<span title=\"Previous month\">&laquo;</span>",
+				nextArrow: "<span title=\"Next month\">&raquo;</span>",
+				defaultDate: defaultDate
+			});
+		
+		}
+
+		function UpdateDataUser(){
+			
+			const article = { 
+				EMAIL: $('#input-email').val(),
+				ID_USER: sessionStorage.getItem('id'),
+                NOMBRE:$('#input-nombre').val(),
+                APELLIDO:$('#input-apellido').val(),
+                TELEFONO:$('#input-telefono').val(),
+                PASS: $('#input-pass').val() };
+			/*Eviamos sentencia*/
+			axios.post('http://localhost/backend_ecomerce/updateUser.php', article).then(function (response){
+			
+				
+					if(response.data == 'SI'){
+						
+						$('#alert-update').html('')
+						$('#alert-update').html(`
+							<div id='alert-update' class="alert alert-success alert-dismissible fade show" role="alert">
+								<strong>Ok!</strong> Tus nuevos datos se guardaron correctamente.
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+						
+						`)
+					}
+					if(response.data == 'NO'){
+						
+						$('#alert-update').html('')
+						$('#alert-update').html(`
+							<div id='alert-update' class="alert alert-warning  alert-dismissible fade show" role="alert">
+								<strong>Disculpa!</strong> Alguno de los campos esta vacio.
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+						
+						`)
+					}
+			})
+	
+
+		}
+
+		function getDataUser(){
+			const article = { 
+			ID_USER: sessionStorage.getItem('id')
+			}
+			/*Eviamos sentencia*/
+			axios.post('http://localhost/backend_ecomerce/getUserDateForUpdate.php', article).then(function (response){
+				
+				
+					$('#input-email').val(response.data['EMAIL'])
+					$('#input-nombre').val(response.data['NOMBRE'])
+					$('#input-apellido').val(response.data['APELLIDO'])
+					$('#input-telefono').val(response.data['TELEFONO'])
+					$('#input-pass').val(response.data['PASS'])
+			})
+	
+
+		}
+	
+		
+		function changeConfig(){
+			$('#btn-dashboard').removeClass('active')
+			$('#btn-config').addClass('active')
+			getDataUser()
+			$('#Contenido').html('')
+			$('#Contenido').html(`
+			
+			<div class="row">
+						<div class="col-12 col-lg-3"></div>
+						<div class="col-12 col-lg-6">
+							<h1 class="h3 mb-3"><strong>Configuracion</strong> de datos.</h1>
+							<div class="card">
+								<div class="card-header">
+									<h5 class="card-title mb-0">Actualizar datos de cliente</h5>
+								</div>
+								<div class="card-body">
+									<div class="mb-3">
+										<label class="form-label">Email</label>
+										<input type="Email" class="form-control" id='input-email' placeholder="ejemplos@email.com" value="">
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Nombre</label>
+										<input type="text" class="form-control" id='input-nombre'  placeholder="Nombre" value="">
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Apellido</label>
+										<input type="text" class="form-control" id='input-apellido'  placeholder="Apellido" value="">
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Telefono</label>
+										<input type="number" class="form-control" id='input-telefono'  placeholder="Telefono" value="">
+									</div>
+									<div class="mb-3">
+										<label class="form-label">Contraseña</label>
+										<input type="password" class="form-control" id='input-pass'  placeholder="" value="">
+									</div>
+									<div class="text-center">
+										<div class="mb-3">
+											
+											<button class="btn btn-primary" onclick="UpdateDataUser()">Actualizar</button>
+											
+										</div>
+										<div id='alert-update' class="mb-3">
+											
+											
+											
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-12 col-lg-3"></div>
+						
+
+					</div>
+			
+			
+			`)
+		}
+		function changeDash(){
+			$('#btn-dashboard').addClass('active')
+			$('#btn-config').removeClass('active')
+			$('#Contenido').html('')
+			$('#Contenido').html(`
+			<!------------------------------------    INICO DE los graficos ----------------------------------------->
+					<h1 class="h3 mb-3"><strong>Analytics</strong> Dashboard</h1>
+				
+
+						<div class="row">
+							<div class="col-12 col-md-6 col-xxl-6 d-flex order-3 order-xxl-3">
+								<div class="card flex-fill w-100">
+									<div class="card-header">
+	
+										<h5 class="card-title mb-0 ">Grafico de Ordenes</h5>
+									</div>
+									<div class="card-body d-flex">
+										<div class="align-self-center w-100">
+											<div class="py-3">
+												<div class="chart chart-xs">
+													<canvas id="chartjs-dashboard-pie"></canvas>
+												</div>
+											</div>
+	
+											<table class="table mb-0">
+												<tbody>
+													<tr>
+														<td>Pendientes	</td>
+														<td class="text-end "><span class="rounded-5 bg-warning p-2 fw-bolder text-white" id="numPendientes">0</span> </td>
+													</tr>
+													<tr>
+														<td>Pagas</td>
+														<td class="text-end"><span class="rounded-5 bg-primary p-2 fw-bolder text-white" id="numPagas">0</span></td>
+													</tr>
+													<tr>
+														<td>Completadas</td>
+														<td class="text-end"><span class="rounded-5 bg-success p-2 fw-bolder text-white" id="numCompletadas">0</span></td>
+													</tr>
+													
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-12  col-md-12 col-xxl-12  d-flex order-1 order-xxl-1">
+								<div class="w-100">
+									<div class="row">
+										<div class="col-sm-6">
+											<div class="card">
+												<div class="card-body">
+													<div class="row">
+														<div class="col mt-0">
+															<h5 class="card-title">Ordenes completadas</h5>
+														</div>
+	
+														<div class="col-auto">
+															<div class="stat text-primary">
+																<i class="fa-solid fa-truck "></i>
+															</div>
+														</div>
+													</div>
+													<h1 class="mt-1 mb-3" style="font-size: 2rem;" id="card-completadas">0</h1>
+													<div class="mb-0">
+														<span class="text-success"> <i class="mdi mdi-arrow-bottom-right" id="porcentajeCompletadas"></i></span>
+														<span class="text-muted"> Del total de ordenes  </span>
+													</div>
+												</div>
+											</div>
+											<div class="card">
+												<div class="card-body">
+													<div class="row">
+														<div class="col mt-0">
+															<h5 class="card-title">Ordenes total</h5>
+														</div>
+	
+														<div class="col-auto">
+															<div class="stat text-primary">
+																<i class="fa-solid fa-list-check fa-lg"></i>
+															</div>
+														</div>
+													</div>
+													<h1 class="mt-1 mb-3" id="card-total"></h1>
+													<div class="mb-0">
+														<span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> <span id="porcentajeTotal">0</span> </span>
+														
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="col-sm-6">
+											<div class="card">
+												<div class="card-body">
+													<div class="row">
+														<div class="col mt-0">
+															<h5 class="card-title">Pagadas</h5>
+														</div>
+	
+														<div class="col-auto">
+															<div class="stat text-primary">
+																<i class="fa-solid fa-dollar-sign fa-lg"></i>
+															</div>
+														</div>
+													</div>
+													<h1 class="mt-1 mb-3" id="card-Pagas"></h1>
+													<div class="mb-0">
+														<span class="text-success"> <i class="mdi mdi-arrow-bottom-right" ></i><span id="porcentajePagas">0</span></span>
+														<span class="text-muted"> Del total de ordenes</span>
+													</div>
+												</div>
+											</div>
+											<div class="card">
+												<div class="card-body">
+													<div class="row">
+														<div class="col mt-0">
+															<h5 class="card-title">Pendientes</h5>
+														</div>
+	
+														<div class="col-auto">
+															<div class="stat text-primary">
+																<i class="fa-solid fa-cart-shopping fa-lg"></i>
+															</div>
+														</div>
+													</div>
+													<h1 class="mt-1 mb-3" id="card-Pendientes">0</h1>
+													<div class="mb-0">
+														<span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> <span id="porcentajePendientes"></span></span>
+														<span class="text-muted">Del total de ordenes</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-12 col-md-6 col-xxl-6 d-flex order-2 order-xxl-2">
+								<div class="card flex-fill">
+									<div class="card-header">
+	
+										<h5 class="card-title mb-0">calendario</h5>
+									</div>
+									<div class="card-body d-flex">
+										<div class="align-self-center w-100">
+											<div class="chart">
+												<div id="datetimepicker-dashboard"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+				
+					<!------------------------------------    INICO DE LA TABLA  ----------------------------------------->
+					
+						<div class="row">
+							<div class="col-12 col-lg-12 col-xxl-12 d-flex">
+								<div class="card flex-fill">
+									<div class="card-header">
+										<h5 class="card-title mb-4">Lista de ordernes</h5>
+										<!-- BOTONES DE FILTRO -->
+										<ul class="nav nav-tabs ">
+											<li class="nav-item">
+											  <a class="nav-link active" id="btn-filtro-todo" onclick="listarOrdenesTodas()" >Todo</a>
+											</li>
+											<li class="nav-item">
+											  <a class="nav-link" id="btn-filtro-pendientes"  onclick="listarOrdenesPendientes()">Pendientes</a>
+											</li>
+											<li class="nav-item">
+											  <a class="nav-link" id="btn-filtro-pagadas"  onclick="listarOrdenesPagadas()" >Pagadas</a>
+											</li>
+											<li class="nav-item">
+											  <a class="nav-link" id="btn-filtro-completadas" onclick="listarOrdenesCompletadas()">Completadas</a>
+											</li>
+										  </ul>
+									</div>
+									<table class="table table-hover my-0 text-center">
+										<thead >
+										  <tr>
+											<th >#orden</th>
+											<th>Estado</th>
+											<th class="d-none d-xl-table-cell">Productos</th>
+											<th class="d-none d-xl-table-cell">Fecha</th>
+											<th class="d-none d-sm-table-cell">Total</th>
+											<th>lista</th>
+											
+										  </tr>
+										</thead>
+										<tbody id="tabla">
+										 
+										  
+										  
+										</tbody>
+									</table>
+									
+								</div>
+							</div>
+							
+						</div>
+					
+			
+			
+			`)
+			listarOrdenesTodas()
+			calendario()
+			printOrdenData()
+
+		}
+		
+	
+	</script>
+
+</head>
+
+<body>
+	<div class="wrapper  ">
+        <!------------------------------------    navegador de  la izquierda----------------------------------------->
+		<nav id="sidebar" class="sidebar js-sidebar">
+			<div class="sidebar-content js-simplebar">
+				<a class="sidebar-brand" href="index.html">
+          <span class="align-middle">MENU</span>
+        </a>
+
+				<ul class="sidebar-nav">
+                    <li id="btn-dashboard" class="sidebar-item active">
+						<a class="sidebar-link" onclick="changeDash()">
+                            <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
+                        </a>
+					</li>
+					
+					<li class="sidebar-item ">
+						<a  class="dropdown-item sidebar-link" href="./index.html"><span><i class="fa-solid fa-store"></i></span> Tienda</a>
+					</li>
+
+					<li id="btn-config" class="sidebar-item">
+						<a class="dropdown-item sidebar-link" onclick="changeConfig()"><span><i class="fa-solid fa-gear"></i></span>Configuracion</a>
+					</li>
+                    <li class="sidebar-item">
+						<a onclick="CerrarSesion()" class="dropdown-item sidebar-link" ><span><i class="align-middle" data-feather="log-in"></i></span>Cerrar sesion</a>
+					</li>
+
+			
+				</ul>
+
+			</div>
+		</nav>
+
+		<div class="main">
+			<nav class="navbar navbar-expand navbar-light navbar-bg">
+				<a class="sidebar-toggle js-sidebar-toggle">
+                    <i class="hamburger align-self-center"></i>
+                  </a>
+                
+                       
+                    <div class=" h2 logo" style="user-select: none;" onclick="window.location.href='./index.html'" >
+                        minimon
+                    </div>
+               
+			</nav>
+            <!------------------------------------    INICO DE los main ----------------------------------------->
+			<main class="content">
+				<div id="Contenido" class="container-fluid p-0">
+                    
+
+					
+				</div>
+			</main>
+            <!------------------------------------    INICO DEL FOOTER    ----------------------------------------->
+			<footer class="footer">
+				<div class="container-fluid">
+					<div class="row text-muted">
+						<div class="col-6 text-start">
+							<p class="mb-0">
+								<a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1 h2 logo">
+                                    minimon
+                                  </a>
+                                  <span class="mb-3 mb-md-0 text-muted h6">&copy; 2023 minimon.Inc</span>
+							</p>
+						</div>
+						<div class="col-6 text-end">
+							<ul class="list-inline">
+								<li class="list-inline-item">
+									<a class="text-muted" href="#"><i class="fa-brands fa-facebook  fa-lg"></i></a>
+								</li>
+								<li class="list-inline-item">
+									<a class="text-muted" href="#"><i class="fa-brands fa-instagram fa-lg"></i></a>
+								</li>
+								<li class="list-inline-item">
+									<a class="text-muted" href="#"><i class="fa-brands fa-square-twitter fa-lg"></i></a>
+								</li>
+								<li class="list-inline-item">
+									<a  class="text-muted" href="https://wa.me/+584123579763" target="_blank"><i class="fa-brands fa-whatsapp fa-lg"></i></a>
+								</li>
+								
+							</ul>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+	</div>
+
+
+
+    <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Lista de productos orden : <span id="NumeroOrden"></span></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="listaModal" class="modal-body">
+          
+        </div>
+        <div class="modal-footer justify-content-start">
+          <span class="fw-bolder" >TOTAL :</span><span id="totalModal"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+	
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			// Pie chart
+			const article = { 
+				ID_USER: sessionStorage.getItem('id')};
+			axios.post('http://localhost/backend_ecomerce/getNumOrdenCliente.php',article)
+                .then(function (response){
+					
+
+					
+					$('#numPendientes').html(response.data[0])
+					$('#numPagas').html(response.data[1])
+					$('#numCompletadas').html(response.data[2])
+
+					$('#card-completadas').html(response.data[0])
+					$('#porcentajeCompletadas').html(((response.data[0]*100)/response.data[3]).toFixed(2)+'%')
+
+					$('#card-Pagas').html(response.data[1])
+					$('#porcentajePagas').html(((response.data[1]*100)/response.data[3]).toFixed(2)+'%')
+
+					$('#card-Pendientes').html(response.data[2])
+					$('#porcentajePendientes').html(((response.data[2]*100)/response.data[3]).toFixed(2)+'%')
+
+					$('#card-total').html(response.data[3])
+					$('#porcentajeTotal').html(((response.data[3]*100)/response.data[3]).toFixed(2)+'%')
+					new Chart(document.getElementById("chartjs-dashboard-pie"), {
+						type: "pie",
+						data: {
+							labels: ["Pagas", "Completadas", "Pendientes"],
+							datasets: [{
+								data: [response.data[1], response.data[2], response.data[0]],
+								backgroundColor: [
+									window.theme.primary,
+									window.theme.success,
+									window.theme.warning
+
+								],
+								borderWidth: 5
+							}]
+						},
+						options: {
+							responsive: !window.MSInputMethodContext,
+							maintainAspectRatio: false,
+							legend: {
+								display: false
+							},
+							cutoutPercentage: 75
+						}
+					});
+				});
+				})
+			
+			
+	</script>
+	
+	
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var date = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
+			var defaultDate = date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
+			document.getElementById("datetimepicker-dashboard").flatpickr({
+				inline: true,
+				prevArrow: "<span title=\"Previous month\">&laquo;</span>",
+				nextArrow: "<span title=\"Next month\">&raquo;</span>",
+				defaultDate: defaultDate
+			});
+		});
+	</script>
+
+</body>
+
+</html>

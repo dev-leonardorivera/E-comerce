@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    
+    <script src="./js/jquery.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/axios.min.js"></script>
+    <title>Login | minimon</title>
+    
+    <link href="./css/sign.css" rel="stylesheet">
+
+    <style>
+        .bd-placeholder-img {
+          font-size: 1.125rem;
+          text-anchor: middle;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          user-select: none;
+        }
+  
+        @media (min-width: 768px) {
+          .bd-placeholder-img-lg {
+            font-size: 3.5rem;
+          }
+        }
+  
+        .b-example-divider {
+          height: 3rem;
+          background-color: rgba(0, 0, 0, .1);
+          border: solid rgba(0, 0, 0, .15);
+          border-width: 1px 0;
+          box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+        }
+  
+        .b-example-vr {
+          flex-shrink: 0;
+          width: 1.5rem;
+          height: 100vh;
+        }
+  
+        .bi {
+          vertical-align: -.125em;
+          fill: currentColor;
+        }
+  
+        .nav-scroller {
+          position: relative;
+          z-index: 2;
+          height: 2.75rem;
+          overflow-y: hidden;
+        }
+  
+        .nav-scroller .nav {
+          display: flex;
+          flex-wrap: nowrap;
+          padding-bottom: 1rem;
+          margin-top: -1px;
+          overflow-x: auto;
+          text-align: center;
+          white-space: nowrap;
+          -webkit-overflow-scrolling: touch;
+        }
+        .logo{
+    border-left: 0.3rem solid rgb(39, 136, 216);
+    
+}
+    </style>
+    <script>
+    
+     
+      $(document).ready(
+        async function(){
+          
+
+          $("form").submit(async function(e){
+
+            e.preventDefault()
+           
+            const article = { 
+              EMAIL: e.target['EMAIL'].value,
+              PASS: e.target['PASS'].value };
+            axios.post('http://localhost/backend_ecomerce/getUser.php', article)
+                .then(function (response){
+                  
+
+                  if(response.data[0] === 'VACIO'){
+                    $('#alert').html(`
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                      <strong>Oops!</strong> Algunos de los campos aun no estan completos.
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  `)                    
+                  }else if(response.data[0] === 'NO' || response.data[0] === 'NOEXISTE'  ){
+                    $('#alert').html(`
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                      <strong>Oops!</strong> No tiene una cuenta asociada este numero de correo o la contraseña es incorrecta.
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  `)
+
+                }else{
+                  
+                  
+                  sessionStorage.setItem('sesion','true')
+                  sessionStorage.setItem('nombre',response.data[0].NOMBRE)
+                  sessionStorage.setItem('apellido',response.data[0].APELLIDO)
+                  sessionStorage.setItem('id',response.data[0].ID_USER)
+                  
+                  window.location.href='./dashboard-cliente.html'
+                  
+
+                }
+              });
+            
+
+          })
+        }
+
+      )
+
+    </script>
+      
+     
+</head>
+<body class="text-center bg-light">
+    
+    <main class="form-signin w-100  m-auto bg-white shadow"  >
+      <form>
+        <span class=" h2 logo  px-2" style="user-select: none;" onclick="window.location.href='./index.html'" >
+          minimon
+        </span>
+        <h1 class="h3 mb-3 fw-1 mt-4" style="user-select: none;">Iniciar Sesion</h1>
+    
+        <div class="form-floating">
+          <input type="email" class="form-control" id="EMAIL" placeholder="name@example.com">
+          <label for="EMAIL">Email </label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="PASS" placeholder="Contraseña">
+          <label for="PASS">Contraseña</label>
+        </div>
+    
+        
+        <button class="w-100 btn btn-lg btn-primary mb-5" type="submit">Entrar</button>
+        <a href="./register.html" class="mb-4 nav-link text-primary">¿ No estas registrado ?</a>
+        <p class=" text-muted h6">&copy; 2023 minimon.Inc</p>
+      </form>
+      <div id="alert">
+        
+      </div>
+    </main>
+    
+    
+        
+      </body>
+</html>

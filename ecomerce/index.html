@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    
+    <script src="https://kit.fontawesome.com/87e28016b0.js" crossorigin="anonymous"></script>
+    <script src="./js/jquery.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/axios.min.js"></script>
+    
+   
+    <script src="./js/script.js"></script>
+    <script>
+      
+
+
+      
+
+
+      async function pagar(){
+        
+        try {
+          let ci = document.getElementById('CI').value
+          let email = document.getElementById('emailModal').value
+          let apellido = document.getElementById('apellidoModal').value
+          let nombre = document.getElementById('nombreModal').value
+          let telefono = document.getElementById('telefono').value
+          let count = listaProductoCliente.length
+          let numProduct = document.getElementById('numProduct').innerHTML
+          let totalAcumulado = document.getElementById('totalAcumulado').innerHTML
+          
+          if(ci!='',email!='',apellido!='',nombre!='',telefono!=''){
+            if(count>0){
+              let mensaje = 
+`Gracias por realizar un pedido con nosotros *minimon*, en breve lo atenderemos para confirmar su compra %0A
+su lista de productos es la siguiente: %0A
+`
+            listaProductoCliente.map(
+              function(item){
+                mensaje = mensaje+item.Nombre+' - '+item.Codigo+' - '+item.Precio+'$ %0A'
+              }
+            )
+            mensaje = mensaje+`%0A PARA UN TOTAL DE *`+numProduct+`* PRODUCTOS. %0A
+TOTAL A PAGAR: *`+totalAcumulado+`$*`;
+            mensaje = mensaje+`%0A %0A
+DATOS PERSONALES PARA PROCESAR LA COMPRA: %0A
+NOMBRE:%20`+nombre+`%0A 
+APELLIDO:%20`+apellido+`%0A
+EMAIL:%20`+email+`%0A
+TELEFONO:%20 +`+telefono+`
+
+%0A %0A
+NOTA: TODA ESTA INFORMACION DE LA COMPRA JUNTO CON EL STATUS, PODRA SER REVISADA POR USTED A TRAVEZ DE NUESTRA PAGINA WEB
+AL REGISTRARSE CON EL MISMO EMAIL CON EL QUE ESTA REALIZANDO ESTA COMPRA. SI NECESITA CAMBIAR ALGUN DATO PERSONAL PARA REALIZAR LA COMPRA, NOTIFIQUE POR ESTE MEDIO O
+VUELVA HACER EL PEDIDO DESDE LA PAGINA WEB CON LOS DATOS CORRECTOS.
+
+
+            
+            `
+        
+          
+          lista = []
+          listaProductoCliente.forEach(element => {
+          lista.push(element.Codigo)   
+        });
+
+        
+
+        const article = { 
+                ID_USER:document.getElementById('CI').value,
+                SUB_TOTAL:document.getElementById('totalAcumulado').innerHTML,
+                TOTAL:document.getElementById('totalAcumulado').innerHTML,
+                PRODUCTOS: lista,
+                TELEFONO : document.getElementById('telefono').value
+              };
+               /* Eviamos sentencia*/
+              axios.post('http://localhost/backend_ecomerce/setOrden.php', article).then(function (response){
+                console.log(response)
+              })
+              /* Eviamos sentencia*/
+              window.open('https://wa.me/+584123579763/?text='+mensaje, '_blank')
+              listaProductoCliente = [];
+              document.getElementById('numProduct').innerHTML='0'
+              document.getElementById('totalAcumulado').innerHTML = '0'
+              $("#numProductModal").html('0')
+            $('#totalAcumuladoModal').html('0')
+
+            }else{
+              document.getElementById('toasts').innerHTML=`
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  <strong>Ocurrio un problema!</strong> No tiene Productos en el carrito.
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                `
+
+            }
+          }else{
+            document.getElementById('toasts').innerHTML=`
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              <strong>Ocurrio un problema!</strong> Faltan campos por llenar.
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            `
+          }
+          listaParaModal()
+          
+        } catch (error) {
+            document.getElementById('toasts').innerHTML=`
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+              <strong>Ocurrio un problema!</strong> Precione el boton siguiente para completar los datos.
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </d`
+          
+        }
+        
+        
+      }
+
+    </script>
+
+    <title>minimon</title>
+    
+    
+</head>
+<header>
+    <section class="header-main border-bottom bg-white fixed-top">
+        <div class="container-fluid ">
+           <div class="row p-2 pt-2 pb-2 d-flex align-items-center">
+               <div class="col-2 col-md-4 h2 logo" style="user-select: none;" onclick="window.location.href='./index.html'" >
+                   minimon
+               </div>
+               <div class="col-8 col-md-4 ">
+                <div class="d-flex form-inputs" ><!--
+
+
+                  <input class="form-control" type="text" placeholder="Buscar"></imodalnput>
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                -->
+                </div>
+               </div>
+               
+               <div class="col-2 col-md-4 ">
+                  <div class="d-flex d-md-flex flex-row justify-content-end align-items-center">
+                      <i class="fa-regular fa-user"></i>
+                       <div class="d-flex flex-column ms-2">
+                           <a href="./dashboard-cliente.html" class="nav-link me-4 fw-bolder">Cuenta</a>
+                       </div>
+                                               <!-- Button trigger modal -->
+                        <button type="button" class="btn " data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                           <img src='./img/bag.png' class='img-fluid' width=32></img>
+
+                        </button>
+                       
+                       <div class="d-flex flex-column ms-2">
+                           <span class="qty fw-bold text-center"><span id="numProduct" class=" text-white numCircle " >0</span> Productos</span>
+                           <span class="fw-bold" >$<span id="totalAcumulado" class="">0</span> Total</span>
+                       </div> 
+                       
+                   </div>               
+               </div>
+           </div>
+        </div> 
+    </section>
+    
+</header>
+<body style="margin-top: 62.5px;">
+    <section>
+        <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+              <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+              <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+              <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+              <img src='./img/ecomerce.jpeg' class='bd-placeholder-img' width="100%" height="100%" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"></img>
+        
+                <div class="container">
+                  <div class="carousel-caption text-start">
+                    
+                  </div>
+                </div>
+              </div>
+              <div class="carousel-item">
+              <img src='./img/slider4.jpg' class='bd-placeholder-img' width="100%" height="100%" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"></img>
+        
+                <div class="container">
+                  <div class="carousel-caption">
+                    
+                  </div>
+                </div>
+              </div>
+              <div class="carousel-item">
+             
+                <img src='./img/slider3.jpg' class='bd-placeholder-img' width="100%" height="100%" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"></img>
+                <div class="container">
+                  <div class="carousel-caption text-center">
+                   
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+    </section>
+    <section>
+        <div class="album py-5 ">
+    
+            <div class="container">
+            
+                <div id="catalogo" class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-4 row-cols-xxl-4 ">
+                 
+               
+
+                 
+                </div>
+                <div class='row row-cols-1 mt-4'>
+                  <div class='col-12 mx-auto'>
+    
+                    <nav aria-label="Page navigation example">
+                      <ul class="pagination justify-content-center ">
+                        <li class="page-item ">
+                          <a class="page-link   fw-bold" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>
+                        <li class="page-item"><button class="page-link fw-bold">1</button></li>
+                        <li class="page-item">
+                          <a class="page-link fw-bold" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </nav>
+                    
+                  </div>
+    
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div id="clickContacto" class="container-fluid bg-light py-5">
+            <div class="row px-5 text-center">
+              <h2 class="mb-4 " id="Contacto" >Contactanos.</h2>
+              <p>Tu opinion es importante para nosotros.
+                  </p>        
+              <div class='col-md-3'>
+      
+              </div>
+      
+              <div class="col-12 col-md-6 text-start">
+                <form action="">
+                  <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="inputEmail" placeholder="name@example.com" ></input>
+                  </div>
+                  <div class="mb-3" id="ContactoDos">
+                    <label for="exampleFormControlInput1" class="form-label">Nombre <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="inputNombre" placeholder="Nombre" ></input>
+                  </div>
+                  <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Mensaje <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="inputMensaje" rows="3"></textarea>
+                  </div>
+                  <a onclick="enviar()" class="btn btn-primary" > Enviar</a>
+                  
+                </form>
+               
+            </div>
+            </div>
+            <div class='col-md-3'>
+      
+              </div>
+            </div>
+    </section>
+    <div class="container-fliud ">
+  
+        <footer class="d-flex flex-wrap justify-content-between justify-content-center align-items-center py-3  border-top">
+          <div class=" d-flex align-items-center mx-2">
+            <a href="/" class="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1 h2 logo">
+              minimon
+            </a>
+            <span class="mb-3 mb-md-0 text-muted h6">&copy; 2023 minimon.Inc</span>
+          </div>
+      
+          <ul class="nav mx-2 justify-content-end list-unstyled d-flex">
+            <li class="ms-3"><a class="text-muted" href="#"><i class="fa-brands fa-facebook  fa-lg"></i></a></li>
+            <li class="ms-3"><a class="text-muted" href="#"><i class="fa-brands fa-instagram fa-lg"></i></a></li>
+            <li class="ms-3"><a class="text-muted" href="#"><i class="fa-brands fa-square-twitter fa-lg"></i></a></li>
+            <li class="ms-3"><a class="text-muted" href="https://wa.me/+584123579763" target="_blank"><i class="fa-brands fa-whatsapp fa-lg"></i></a></li>
+          </ul>
+        </footer>
+         <!-- Modal -->
+         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="list-product" class="modal-body " >
+                  
+                    
+                   
+                    
+                </div>
+                <div class="modal-footer">      
+                    <span class="qty fw-bold me-2"> <span id="numProductModal">0</span> Productos</span>
+                    <span class="fw-bold mx-2 " >$<span id="totalAcumuladoModal">0</span> Total</span>
+                    <button type="button" class="btn btn-success"  onclick='listaParaModal()'>Atras</button>
+                    <button type="button" class="btn btn-success"  onclick='formularioPago()'>Siguiene</button>
+                    <button type="button" class="btn btn-success " id="btnPagar" onclick='pagar()' >finalizar</button>
+                    
+                </div>
+                <div class="modal-footer m-auto" id="toasts">
+
+                </div>
+            </div>
+            </div>
+        </div>
+      
+      </div>
+      
+      
+
+      
+    
+</body>
+</html>

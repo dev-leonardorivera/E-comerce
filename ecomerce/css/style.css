@@ -1,0 +1,141 @@
+.form-inputs{
+    position:relative;
+}
+.form-inputs .form-control{
+    height:45px; 
+}
+
+.form-inputs .form-control:focus{
+    box-shadow:none;
+    border:1px solid rgb(0, 0, 255);
+}
+
+.form-inputs i{
+    position:absolute;
+    right:10px;
+    top:15px;
+}
+
+.shop-bag{
+    background-color:rgb(255, 255, 255);
+    color:#fff;
+    height:50px;
+    width:50px;
+    font-size:25px;
+    display:flex;
+    border-radius:50%;
+    align-items:center;
+    justify-content:center;
+}
+
+.qty{
+    font-size:15px;
+}
+
+.logo{
+    border-left: 0.3rem solid rgb(39, 136, 216);
+    
+}
+.bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    
+  }
+
+  @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+    }
+  }
+
+  .b-example-divider {
+    height: 3rem;
+    background-color: rgba(0, 0, 0, .1);
+    border: solid rgba(0, 0, 0, .15);
+    border-width: 1px 0;
+    box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+  }
+
+  .b-example-vr {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 100vh;
+  }
+
+  .bi {
+    vertical-align: -.125em;
+    fill: currentColor;
+  }
+
+  .nav-scroller {
+    position: relative;
+    z-index: 2;
+    height: 2.75rem;
+    overflow-y: hidden;
+  }
+
+  .nav-scroller .nav {
+    display: flex;
+    flex-wrap: nowrap;
+    padding-bottom: 1rem;
+    margin-top: -1px;
+    overflow-x: auto;
+    text-align: center;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+.card-text {
+  min-height: 4rem;
+  
+}
+.btn-add{
+  border-bottom: 0.2rem solid black;
+  user-select: none;
+  
+}
+
+.min{
+    padding: 4px;
+    padding-right: 10px;
+    padding-left: 10px;
+    border-radius:10%;
+    user-select: none;
+}
+
+
+
+.card img:hover{
+    
+    opacity: 0.6;
+}
+
+.btn-add:hover{
+
+    font-size: 1.2rem;
+    transition: 0.5s;
+    
+
+}
+.numCircle{
+  background-color: rgb(39, 136, 216);
+  border-radius: 50%;
+  display:inline-block;
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.orden{
+display: inline-block;
+ width: 7rem;
+}
+
+
+.btn-menu:hover{
+  border-radius: 0px;
+  border-bottom: 2px solid black;
+}
+
