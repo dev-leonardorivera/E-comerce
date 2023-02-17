@@ -22,9 +22,9 @@ NOTA: No permite pagos desde la aplicacion, los pagos se debe realizar directame
 
 
 
-### `Version 0.1`
-### `Autor: `Leonardo Rivera
-### `linkedin: ` https://www.linkedin.com/in/leonardo-rivera-a83040250
-### `Facebok:` https://www.facebook.com/people/Leonardo-Rivera/100016973262885/
-### `Correo:` Leonardorivera1004@gmail.com
+### Version 0.1
+### Autor: Leonardo Rivera
+### linkedin:  https://www.linkedin.com/in/leonardo-rivera-a83040250
+### Facebok: https://www.facebook.com/people/Leonardo-Rivera/100016973262885/
+### Correo: Leonardorivera1004@gmail.com
 
